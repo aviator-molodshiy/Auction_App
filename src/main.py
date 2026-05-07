@@ -15,8 +15,12 @@ profit = estimated_sales - total_costs
 print("-" * 30)
 print(f"Загальні витрати: ${total_costs}")
 
+tax_rate = 0.15  # 15% податку
+
 if profit > 0:
-    print(f"✅ Очікуваний прибуток: ${profit}")
+    net_profit = profit * (1 - tax_rate)
+    print(f"✅ Очікуваний прибуток (брудними): ${profit}")
+    print(f"💰 Чистий прибуток (після податків 15%): ${net_profit:.2f}")
     print("Порада: Це вигідна угода!")
 elif profit == 0:
     print("⚠️ Ви вийдете в нуль.")
