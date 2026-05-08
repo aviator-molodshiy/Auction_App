@@ -1,29 +1,25 @@
-print("--- Розрахунок прибутку з контейнера ---")
+print("--- Опис вмісту контейнера ---")
 
-# Отримуємо дані про витрати
-container_price = float(input("Ціна контейнера на аукціоні ($): "))
-clean_up_costs = float(input("Витрати на прибирання та вивіз ($): "))
-storage_fee = float(input("Оренда складу для сортування ($): "))
+# Створюємо порожній список для цін речей
+prices = []
 
-# Отримуємо дані про очікуваний продаж
-estimated_sales = float(input("Очікувана сума від продажу речей ($): "))
+print("Вводьте ціни речей (для завершення введіть 0):")
 
-# Рахуємо результат
-total_costs = container_price + clean_up_costs + storage_fee
-profit = estimated_sales - total_costs
+while True:
+    price = float(input("Ціна речі ($): "))
+    if price == 0:
+        break  # Виходимо з циклу, якщо ввели 0
+    prices.append(price)  # Додаємо ціну в наш список
+
+# Рахуємо загальну суму всіх речей
+total_value = sum(prices)
+# Рахуємо кількість речей
+items_count = len(prices)
 
 print("-" * 30)
-print(f"Загальні витрати: ${total_costs}")
+print(f"Всього знайдено речей: {items_count}")
+print(f"Загальна вартість вмісту: ${total_value:.2f}")
 
-tax_rate = 0.15  # 15% податку
-
-if profit > 0:
-    net_profit = profit * (1 - tax_rate)
-    print(f"✅ Очікуваний прибуток (брудними): ${profit}")
-    print(f"💰 Чистий прибуток (після податків 15%): ${net_profit:.2f}")
-    print("Порада: Це вигідна угода!")
-elif profit == 0:
-    print("⚠️ Ви вийдете в нуль.")
-else:
-    print(f"❌ Очікуваний збиток: ${abs(profit)}")
-    print("Порада: Краще не купувати цей лот.")
+if items_count > 0:
+    average_price = total_value / items_count
+    print(f"Середня ціна однієї речі: ${average_price:.2f}")
