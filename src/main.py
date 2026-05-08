@@ -23,3 +23,14 @@ print(f"Загальна вартість вмісту: ${total_value:.2f}")
 if items_count > 0:
     average_price = total_value / items_count
     print(f"Середня ціна однієї речі: ${average_price:.2f}")
+
+# Знаходимо найдорожчу та найдешевшу річ
+expensive_item = max(prices)
+cheapest_item = min(prices)
+
+print(f"💎 Найдорожча річ: ${expensive_item:.2f}")
+print(f"📦 Найдешевша річ: ${cheapest_item:.2f}")
+
+# Сортуємо список від дорогих до дешевих
+prices.sort(reverse=True)
+print(f"Сортований список цін: {prices}")
