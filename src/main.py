@@ -28,3 +28,13 @@ for name, price in inventory.items():
 print("-" * 30)
 print(f"Загальна кількість унікальних речей: {len(inventory)}")
 print(f"Загальна вартість: ${total_value:.2f}")
+
+print("-" * 30)
+search_item = input("Яку річ знайти у звіті? ")
+
+# Перевіряємо, чи є така назва у нашому словнику
+if search_item in inventory:
+    price = inventory[search_item]
+    print(f"✅ Знайдено! {search_item} коштує ${price:.2f}")
+else:
+    print(f"❌ На жаль, речі '{search_item}' немає в цьому контейнері.")
