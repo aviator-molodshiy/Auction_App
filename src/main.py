@@ -29,6 +29,21 @@ print("-" * 30)
 print(f"Загальна кількість унікальних речей: {len(inventory)}")
 print(f"Загальна вартість: ${total_value:.2f}")
 
+# --- ЗАПИС У ФАЙЛ ---
+file_name = "container_report.txt"
+
+# Відкриваємо файл для запису ('w' означає write)
+with open(file_name, "w", encoding="utf-8") as file:
+    file.write("--- ЗВІТ ПО КОНТЕЙНЕРУ ---\n")
+
+    for name, price in inventory.items():
+        file.write(f"- {name}: ${price:.2f}\n")
+
+    file.write("-" * 25 + "\n")
+    file.write(f"Загальна вартість: ${total_value:.2f}\n")
+
+print(f"\n✅ Звіт успішно збережено у файл: {file_name}")
+
 print("-" * 30)
 search_item = input("Яку річ знайти у звіті? ")
 
