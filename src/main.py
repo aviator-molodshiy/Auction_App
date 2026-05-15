@@ -1,101 +1,69 @@
-# print("--- Детальний опис контейнера ---")
-#
-# # Створюємо порожній словник
-# inventory = {}
-#
-# print("Вводьте дані про речі (для завершення введіть 'stop' у назві):")
-#
-# while True:
-#     item_name = input("Назва речі: ")
-#     if item_name.lower() == 'stop':
-#         break
-#
-#     item_price = float(input(f"Ціна для '{item_name}' ($): "))
-#
-#     # Додаємо в словник: ключ — назва, значення — ціна
-#     inventory[item_name] = item_price
-#
-# print("-" * 30)
-# print("ВАШ ЗВІТ ПО КОНТЕЙНЕРУ:")
-#
-# total_value = 0
-#
-# # Перебираємо словник (назва та ціна)
-# for name, price in inventory.items():
-#     print(f"- {name}: ${price:.2f}")
-#     total_value += price
-#
-# print("-" * 30)
-# print(f"Загальна кількість унікальних речей: {len(inventory)}")
-# print(f"Загальна вартість: ${total_value:.2f}")
-#
-# # --- ЗАПИС У ФАЙЛ ---
-# file_name = "container_report.txt"
-#
-# # Відкриваємо файл для запису ('w' означає write)
-# with open(file_name, "w", encoding="utf-8") as file:
-#     file.write("--- ЗВІТ ПО КОНТЕЙНЕРУ ---\n")
-#
-#     for name, price in inventory.items():
-#         file.write(f"- {name}: ${price:.2f}\n")
-#
-#     file.write("-" * 25 + "\n")
-#     file.write(f"Загальна вартість: ${total_value:.2f}\n")
-#
-# print(f"\n✅ Звіт успішно збережено у файл: {file_name}")
-#
-# print("-" * 30)
-# search_item = input("Яку річ знайти у звіті? ")
-#
-# # Перевіряємо, чи є така назва у нашому словнику
-# if search_item in inventory:
-#     price = inventory[search_item]
-#     print(f"✅ Знайдено! {search_item} коштує ${price:.2f}")
-# else:
-#     print(f"❌ На жаль, речі '{search_item}' немає в цьому контейнері.")
-
-
-
 import os
 
-file_name = "container_report.txt"
-inventory = {}
+# Автоматично знаходимо шлях до головної папки проєкту, де лежить правильний звіт
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FILE_NAME = os.path.join(BASE_DIR, "container_report.txt")
 
-# --- КРОК 1: ЧИТАННЯ ДАНИХ З ФАЙЛУ (якщо він існує) ---
-if os.path.exists(file_name):
-    load_choice = input(f"Знайдено файл '{file_name}'. Завантажити дані? (yes/no): ").lower()
 
-    if load_choice == 'yes':
-        with open(file_name, "r", encoding="utf-8") as file:
+# 1. ФУНКЦІЯ РОЗРАХУНКУ ПОДАТКУ
+def calculate_tax(profit, tax_rate=0.15):
+    """Рахує суму податку від прибутку"""
+    if profit > 0:
+        return profit * tax_rate
+    return 0.0
+
+
+# 2. ФУНКЦІЯ ДЛЯ ЗАВАНТАЖЕННЯ ДАНИХ
+def load_inventory(file_path):
+    """Завантажує дані з текстового файлу в словник"""
+    loaded_data = {}
+    if os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as file:
             for line in file:
-                # Шукаємо рядки, які починаються з "- " (наші товари)
                 if line.startswith("- "):
-                    # Прибираємо "- " і розбиваємо рядок по символу ":"
                     parts = line.replace("- ", "").split(": $")
                     if len(parts) == 2:
-                        name = parts[0].strip()
-                        price = float(parts[1].strip())
-                        inventory[name] = price
-        print(f"✅ Завантажено {len(inventory)} речей.")
+                        loaded_data[parts[0].strip()] = float(parts[1].strip())
+    return loaded_data
 
-# --- КРОК 2: ДОДАВАННЯ НОВИХ РЕЧЕЙ (твій старий код) ---
-print("\nВводьте нові речі (або 'stop' для завершення):")
-while True:
-    item_name = input("Назва речі: ")
-    if item_name.lower() == 'stop':
-        break
-    item_price = float(input(f"Ціна для '{item_name}' ($): "))
-    inventory[item_name] = item_price
 
-# --- КРОК 3: РОЗРАХУНОК ТА ЗАПИС (оновлюємо суму) ---
-total_value = sum(inventory.values())
-print(f"\nЗагальна вартість інвентарю: ${total_value:.2f}")
+# 3. ФУНКЦІЯ ДЛЯ ЗБЕРЕЖЕННЯ ДАНИХ
+def save_inventory(file_path, inventory, total_value):
+    """Записує поточний словник інвентарю у текстовий файл"""
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write("--- ЗВІТ ПО КОНТЕЙНЕРУ ---\n")
+        for name, price in inventory.items():
+            file.write(f"- {name}: ${price:.2f}\n")
+        file.write("-" * 25 + "\n")
+        file.write(f"Загальна вартість: ${total_value:.2f}\n")
 
-with open(file_name, "w", encoding="utf-8") as file:
-    file.write("--- ЗВІТ ПО КОНТЕЙНЕРУ ---\n")
-    for name, price in inventory.items():
-        file.write(f"- {name}: ${price:.2f}\n")
-    file.write("-" * 25 + "\n")
-    file.write(f"Загальна вартість: ${total_value:.2f}\n")
 
-print(f"✅ Дані оновлено у файлі: {file_name}")
+# 4. ГОЛОВНА ФУНКЦІЯ ПРОГРАМИ
+def main():
+    print("--- Професійний Аукціон-Менеджер ---")
+
+    # Завантажуємо старі дані
+    inventory = load_inventory(FILE_NAME)
+    if inventory:
+        print(f"✅ Успішно завантажено {len(inventory)} речей з минулого звіту.")
+    else:
+        print("ℹ️ Минулий звіт порожній або файл не знайдено. Починаємо новий облік.")
+
+    print("\nВводьте нові речі (або 'stop' для завершення):")
+    while True:
+        item_name = input("Назва речі: ")
+        if item_name.lower() == 'stop':
+            break
+        item_price = float(input(f"Ціна для '{item_name}' ($): "))
+        inventory[item_name] = item_price
+
+    total_value = sum(inventory.values())
+    print(f"\nЗагальна вартість інвентарю: ${total_value:.2f}")
+
+    # Викликаємо функцію збереження, щоб оновити файл на диску
+    save_inventory(FILE_NAME, inventory, total_value)
+    print(f"✅ Дані успішно оновлено та збережено у файлі.")
+
+
+if __name__ == "__main__":
+    main()
