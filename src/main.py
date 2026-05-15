@@ -1,13 +1,12 @@
 import os
 
-# Автоматично знаходимо шлях до головної папки проєкту, де лежить правильний звіт
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FILE_NAME = os.path.join(BASE_DIR, "container_report.txt")
 
 
 # 1. ФУНКЦІЯ РОЗРАХУНКУ ПОДАТКУ
 def calculate_tax(profit, tax_rate=0.15):
-    """Рахує суму податку від прибутку"""
+    """Рахує суму податку від прибутку (15% за замовчуванням)"""
     if profit > 0:
         return profit * tax_rate
     return 0.0
@@ -28,26 +27,29 @@ def load_inventory(file_path):
 
 
 # 3. ФУНКЦІЯ ДЛЯ ЗБЕРЕЖЕННЯ ДАНИХ
-def save_inventory(file_path, inventory, total_value):
-    """Записує поточний словник інвентарю у текстовий файл"""
+def save_inventory(file_path, inventory, total_value, container_cost, tax, net_profit):
+    """Записує інвентар та повний фінансовий звіт у файл"""
     with open(file_path, "w", encoding="utf-8") as file:
-        file.write("--- ЗВІТ ПО КОНТЕЙНЕРУ ---\n")
+        file.write("--- ПОВНИЙ ЗВІТ ПО КОНТЕЙНЕРУ ---\n")
         for name, price in inventory.items():
             file.write(f"- {name}: ${price:.2f}\n")
-        file.write("-" * 25 + "\n")
-        file.write(f"Загальна вартість: ${total_value:.2f}\n")
+        file.write("-" * 35 + "\n")
+        file.write(f"Загальна вартість речей: ${total_value:.2f}\n")
+        file.write(f"Витрати на купівлю лота: ${container_cost:.2f}\n")
+        file.write(f"Податок США (15%): ${tax:.2f}\n")
+        file.write(f"💰 ЧИСТИЙ ПРИБУТОК: ${net_profit:.2f}\n")
 
 
 # 4. ГОЛОВНА ФУНКЦІЯ ПРОГРАМИ
 def main():
-    print("--- Професійний Аукціон-Менеджер ---")
+    print("--- Професійний Аукціон-Менеджер v2.0 ---")
 
-    # Завантажуємо старі дані
     inventory = load_inventory(FILE_NAME)
     if inventory:
         print(f"✅ Успішно завантажено {len(inventory)} речей з минулого звіту.")
-    else:
-        print("ℹ️ Минулий звіт порожній або файл не знайдено. Починаємо новий облік.")
+
+    # Запитуємо інвестиційні витрати
+    container_cost = float(input("\nВведіть вартість купівлі цього контейнера ($): "))
 
     print("\nВводьте нові речі (або 'stop' для завершення):")
     while True:
@@ -57,12 +59,27 @@ def main():
         item_price = float(input(f"Ціна для '{item_name}' ($): "))
         inventory[item_name] = item_price
 
+    # Рахуємо фінанси
     total_value = sum(inventory.values())
-    print(f"\nЗагальна вартість інвентарю: ${total_value:.2f}")
+    dirty_profit = total_value - container_cost
 
-    # Викликаємо функцію збереження, щоб оновити файл на диску
-    save_inventory(FILE_NAME, inventory, total_value)
-    print(f"✅ Дані успішно оновлено та збережено у файлі.")
+    # ВИКЛИК НАШОЇ ФУНКЦІЇ (Передаємо брудний прибуток як аргумент)
+    tax_amount = calculate_tax(dirty_profit)
+    net_profit = dirty_profit - tax_amount
+
+    print("-" * 35)
+    print(f"Загальна ринкова вартість речей: ${total_value:.2f}")
+    print(f"Брудний прибуток (до податків): ${dirty_profit:.2f}")
+    print(f"Податкові зобов'язання: ${tax_amount:.2f}")
+
+    if net_profit > 0:
+        print(f"💰 ЧИСТИЙ ПРИБУТОК (після податків): ${net_profit:.2f} ✅")
+    else:
+        print(f"❌ Фінансовий збиток за цим лотом: ${abs(net_profit):.2f}")
+
+    # Зберігаємо оновлений розширений звіт
+    save_inventory(FILE_NAME, inventory, total_value, container_cost, tax_amount, net_profit)
+    print(f"\n✅ Повний фінансовий аналіз збережено у файл.")
 
 
 if __name__ == "__main__":
