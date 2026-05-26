@@ -1,0 +1,20 @@
+[
+    {
+        "name": "Container A",
+        "items": {
+            "Chair": 100,
+            "Table": 300,
+            "sofa": 500.0,
+            "gucci": 400.0,
+            "gddg": 900.0,
+            "luis vsa": 450.0
+        }
+    },
+    {
+        "name": "Container B",
+        "items": {
+            "Lamp": 50,
+            "Vase": 80
+        }
+    }
+]
